@@ -11,6 +11,8 @@ a big numeric readout, a rolling 60 s time-series plot, a histogram of
 recent samples, and exposes the meter's 8 calibration "bands" with
 per-band frequency + offset.
 
+![interface](docs/interface.png)
+
 ## Build & run
 
 ```bash
