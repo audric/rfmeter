@@ -59,6 +59,15 @@ coverage. The UI is verified manually against the live meter.
   meter's max safe input (default 0 dBm), computes the attenuation
   you need to add. Apply writes that as the current band's offset.
 
+> [!CAUTION]
+> **Use attenuators. Use attenuators. Use attenuators.** The meter's
+> safe input ceiling is **0 dBm (1 mW)**. Most real transmitters —
+> handhelds, LoRa nodes, anything with a PA — put out **+20 to +30 dBm
+> (0.1–1 W)** and will destroy the meter the instant you connect them.
+> Always insert an attenuator (rated for the full source power) inline
+> first. See [Testing Meshtastic devices](docs/meshtastic-testing.md)
+> for sizing examples.
+
 ## Guides
 
 - [Testing Meshtastic devices](docs/meshtastic-testing.md) — measuring
