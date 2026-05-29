@@ -10,7 +10,7 @@ A short field guide for measuring the transmit power of a Meshtastic
 > will destroy it instantly. **Always insert an attenuator** (and/or a
 > directional coupler / tap) between the radio and the meter.
 
-## TL;DR
+## Quick start
 
 1. Pick an attenuator so the meter sees roughly **−20 to −5 dBm**
    (see [Attenuator examples](#attenuator-examples)).
