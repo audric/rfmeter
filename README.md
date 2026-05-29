@@ -59,6 +59,11 @@ coverage. The UI is verified manually against the live meter.
   meter's max safe input (default 0 dBm), computes the attenuation
   you need to add. Apply writes that as the current band's offset.
 
+## Guides
+
+- [Testing Meshtastic devices](docs/meshtastic-testing.md) — measuring
+  LoRa node TX power safely: W↔dBm table and attenuator examples.
+
 ## Keyboard
 
 | Key | Action |
