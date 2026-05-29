@@ -29,7 +29,9 @@ Keyboard shortcuts:
   Esc    Close modal
   Space  Pause / resume plot
 
-Press Esc to close.`
+Press Esc to close.
+
+Audric IW1GEU — 2026`
 
 // HelpModal is drawn on top of the cockpit when shown.
 func HelpModal(gtx layout.Context, th *material.Theme) layout.Dimensions {
