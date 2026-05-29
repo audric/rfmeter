@@ -1,6 +1,30 @@
+# Build output
 /rfmeter
+*.exe
+
+# Test / coverage
+*.test
+*.out
+coverage.*
+
+# App artifacts
 /log_*.csv
 /rfmeter_snapshot_*.png
+
+# Vendor doc archive (large; not source)
 /rf_power_meter_100khz_to10Ghz/
 /rf_power_meter_100khz_to10Ghz.zip
+
+# Claude Code local state
 /.claude/
+
+# Editors / IDEs
+/.idea/
+/.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
