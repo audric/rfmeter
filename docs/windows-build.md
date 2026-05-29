@@ -41,6 +41,23 @@ without it, build as a GUI subsystem binary:
 go build -ldflags="-s -w -H=windowsgui" -o rfmeter.exe ./cmd/rfmeter
 ```
 
+## Application icon
+
+The Windows `.exe` carries an embedded icon (the green `RF` mark). It is
+linked from `cmd/rfmeter/rfmeter_windows_amd64.syso` — Go automatically
+includes `*_windows_amd64.syso` resource files when building for Windows,
+and ignores them on every other platform.
+
+To regenerate it after changing the artwork in `build/icon/`:
+
+```bash
+magick build/icon/rfmeter-256.png \
+  -define icon:auto-resize=256,128,64,48,32,16 build/icon/rfmeter.ico
+go run github.com/akavel/rsrc@latest \
+  -ico build/icon/rfmeter.ico -arch amd64 \
+  -o cmd/rfmeter/rfmeter_windows_amd64.syso
+```
+
 ## Cross-compiling from Linux/macOS
 
 You can produce the Windows binary without a Windows machine:

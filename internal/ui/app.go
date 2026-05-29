@@ -12,6 +12,7 @@ import (
 	"gioui.org/app"
 	"gioui.org/font/gofont"
 	"gioui.org/io/key"
+	"gioui.org/io/system"
 	"gioui.org/layout"
 	"gioui.org/op"
 	"gioui.org/op/paint"
@@ -32,6 +33,7 @@ type App struct {
 	Controls       *Controls
 	Keys           *KeyHandler
 	Attenuator     *Attenuator
+	Menu           *Menu
 	ShowHelp       bool
 	ShowAttenuator bool
 	// FrameSource returns frames for the plot. Set by Controller; defaults to fakeFrames.
@@ -84,6 +86,8 @@ func New() *App {
 	a.Controls.OnLogToggle = func() { log.Printf("log toggle") }
 
 	a.FrameSource = func() []meter.Frame { return a.fakeFrames }
+	// OnExit is wired in Run, where the window handle is available.
+	a.Menu = &Menu{OnAbout: func() { a.ShowHelp = true }}
 	a.Attenuator = NewAttenuator(th)
 	a.Attenuator.OnApply = func(rec float64) {
 		freq, _ := parseInt(a.Controls.FreqInput.Text())
@@ -96,10 +100,11 @@ func New() *App {
 		OnAttenuator: func() { a.ShowAttenuator = true },
 		OnSelectPage: func(l byte) { a.Controls.Selected = l; log.Printf("F: page %c", l) },
 		OnToggleLog:  func() { log.Printf("F11: toggle log") },
-		OnSnapshot: a.snapshot,
+		OnSnapshot:   a.snapshot,
 		OnEscape: func() {
 			a.ShowHelp = false
 			a.ShowAttenuator = false
+			a.Menu.close()
 		},
 		OnSpace: func() { a.Plot.Paused = !a.Plot.Paused },
 	}
@@ -147,6 +152,7 @@ func (a *App) snapshot() {
 
 // Run drives the Gio event loop. Returns when the window is closed.
 func (a *App) Run(w *app.Window) error {
+	a.Menu.OnExit = func() { w.Perform(system.ActionClose) }
 	var ops op.Ops
 	for {
 		switch e := w.Event().(type) {
@@ -164,26 +170,33 @@ func (a *App) Run(w *app.Window) error {
 				}
 			}
 			paint.Fill(gtx.Ops, color.NRGBA{R: 0x18, G: 0x18, B: 0x18, A: 0xff})
-			layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
+			layout.Flex{Axis: layout.Vertical}.Layout(gtx,
 				layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-					gtx.Constraints.Max.X = gtx.Dp(unit.Dp(280))
-					gtx.Constraints.Min.X = gtx.Constraints.Max.X
-					return a.Controls.Layout(gtx)
+					return a.Menu.Bar(gtx, a.Theme)
 				}),
 				layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-					return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
+					return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
 						layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-							return (&Readout{Th: a.Theme}).Layout(gtx, a.Read)
-						}),
-						layout.Flexed(3, func(gtx layout.Context) layout.Dimensions {
-							return a.Plot.Layout(gtx, a.Theme, a.FrameSource())
+							gtx.Constraints.Max.X = gtx.Dp(unit.Dp(280))
+							gtx.Constraints.Min.X = gtx.Constraints.Max.X
+							return a.Controls.Layout(gtx)
 						}),
 						layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-							mean := 0.0
-							if a.Hist != nil {
-								mean = state.ComputeStats(a.FrameSource()).MeanDBm
-							}
-							return HistogramView{}.Layout(gtx, a.Theme, a.Hist, mean)
+							return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
+								layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+									return (&Readout{Th: a.Theme}).Layout(gtx, a.Read)
+								}),
+								layout.Flexed(3, func(gtx layout.Context) layout.Dimensions {
+									return a.Plot.Layout(gtx, a.Theme, a.FrameSource())
+								}),
+								layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+									mean := 0.0
+									if a.Hist != nil {
+										mean = state.ComputeStats(a.FrameSource()).MeanDBm
+									}
+									return HistogramView{}.Layout(gtx, a.Theme, a.Hist, mean)
+								}),
+							)
 						}),
 					)
 				}),
@@ -194,6 +207,7 @@ func (a *App) Run(w *app.Window) error {
 			if a.ShowAttenuator {
 				a.Attenuator.Layout(gtx, a.Controls.Selected)
 			}
+			a.Menu.Overlay(gtx, a.Theme)
 			a.drawToast(gtx, a.Theme)
 			e.Frame(gtx.Ops)
 		}
