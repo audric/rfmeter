@@ -20,6 +20,9 @@ go build -ldflags="-s -w" -o rfmeter ./cmd/rfmeter
 ./rfmeter
 ```
 
+Or via the Makefile: `make` (Linux binary), `make windows` (cross-build
+`rfmeter.exe`), `make all`, `make run`, `make test`, `make clean`.
+
 Requires:
 - Go 1.22+ (1.25+ pulled in transitively by `go.bug.st/serial`)
 - System libs (Debian/Ubuntu): `libxkbcommon-x11-dev libx11-xcb-dev`

@@ -41,6 +41,9 @@ without it, build as a GUI subsystem binary:
 go build -ldflags="-s -w -H=windowsgui" -o rfmeter.exe ./cmd/rfmeter
 ```
 
+The `make windows` target (from the repo's Makefile) already builds with
+`-H=windowsgui`, so the produced `rfmeter.exe` has no console window.
+
 ## Application icon
 
 The Windows `.exe` carries an embedded icon (the green `RF` mark). It is
