@@ -21,7 +21,9 @@ go build -ldflags="-s -w" -o rfmeter ./cmd/rfmeter
 ```
 
 Or via the Makefile: `make` (Linux binary), `make windows` (cross-build
-`rfmeter.exe`), `make all`, `make run`, `make test`, `make clean`.
+`rfmeter.exe`), `make all`, `make run`, `make test`, `make clean`. On
+Windows without `make`, use `.\build.ps1` (same targets) — see
+[Building on Windows](docs/windows-build.md).
 
 Requires:
 - Go 1.22+ (1.25+ pulled in transitively by `go.bug.st/serial`)

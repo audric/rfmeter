@@ -32,6 +32,18 @@ go build -ldflags="-s -w" -o rfmeter.exe ./cmd/rfmeter
 `-ldflags="-s -w"` strips debug info to shrink the binary; drop it
 while developing.
 
+Or use the bundled PowerShell helper (no `make` required):
+
+```powershell
+.\build.ps1            # build rfmeter.exe (GUI subsystem, no console)
+.\build.ps1 run        # build and run
+.\build.ps1 test       # go test -race ./...
+.\build.ps1 clean
+```
+
+If scripts are blocked by execution policy, run it as
+`powershell -ExecutionPolicy Bypass -File .\build.ps1 <target>`.
+
 ### Hide the console window (optional)
 
 A plain `go build` opens a console window alongside the GUI. To launch
