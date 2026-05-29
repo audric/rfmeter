@@ -79,7 +79,7 @@ dB of dynamic range; too little costs you the meter.
 
 | Node output | Use | Meter sees | Notes |
 |---|---|---|---|
-| +30 dBm (1 W) | 40 dB pad | −10 dBm | 30 dB would sit *at* the ceiling — no margin. Use 40 dB. |
+| +30 dBm (1 W) | 40 dB | −10 dBm | 30 dB would sit *at* the ceiling — no margin. Use 40 dB. |
 | +27 dBm (500 mW) | 40 dB | −13 dBm | |
 | +22 dBm (158 mW) | 30 dB | −8 dBm | |
 | +20 dBm (100 mW) | 30 dB | −10 dBm | |
