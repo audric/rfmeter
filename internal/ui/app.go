@@ -5,6 +5,7 @@ import (
 	"log"
 	"math"
 	"os"
+	"sync/atomic"
 	"time"
 
 	"gioui.org/app"
@@ -35,6 +36,13 @@ type App struct {
 	// FrameSource returns frames for the plot. Set by Controller; defaults to fakeFrames.
 	FrameSource func() []meter.Frame
 	fakeFrames  []meter.Frame
+
+	// snapshotWriter renders+encodes the PNG. Indirected for testing;
+	// defaults to Snapshot.
+	snapshotWriter func(dir string, d SnapshotData) (string, error)
+	// snapshotBusy is true while a snapshot is rendering off-thread, so
+	// repeated F12 presses are ignored rather than piling up goroutines.
+	snapshotBusy atomic.Bool
 }
 
 // New returns an App with default theme and synthetic demo data.
@@ -47,11 +55,12 @@ func New() *App {
 	th.Palette.ContrastBg = color.NRGBA{R: 0x30, G: 0x50, B: 0x80, A: 0xff}
 	th.Palette.ContrastFg = color.NRGBA{R: 0xff, G: 0xff, B: 0xff, A: 0xff}
 	a := &App{
-		Theme:    th,
-		Read:     Reading{DBm: -42.3, WattsW: 5.9e-8, Valid: true},
-		Plot:     NewPlot(),
-		Hist:     state.NewHistogram(),
-		Controls: NewControls(th),
+		Theme:          th,
+		Read:           Reading{DBm: -42.3, WattsW: 5.9e-8, Valid: true},
+		Plot:           NewPlot(),
+		Hist:           state.NewHistogram(),
+		Controls:       NewControls(th),
+		snapshotWriter: Snapshot,
 	}
 	now := time.Now()
 	for i := 0; i < 600; i++ {
@@ -83,23 +92,7 @@ func New() *App {
 		OnAttenuator: func() { a.ShowAttenuator = true },
 		OnSelectPage: func(l byte) { a.Controls.Selected = l; log.Printf("F: page %c", l) },
 		OnToggleLog:  func() { log.Printf("F11: toggle log") },
-		OnSnapshot: func() {
-			cwd, _ := os.Getwd()
-			frames := a.FrameSource()
-			path, err := Snapshot(cwd, SnapshotData{
-				Reading: a.Read,
-				Frames:  frames,
-				Hist:    a.Hist,
-				Stats:   state.ComputeStats(frames),
-				WindowS: a.Plot.WindowSec,
-				Page:    a.Controls.Selected,
-			})
-			if err != nil {
-				log.Printf("snapshot: %v", err)
-				return
-			}
-			log.Printf("snapshot saved: %s", path)
-		},
+		OnSnapshot: a.snapshot,
 		OnEscape: func() {
 			a.ShowHelp = false
 			a.ShowAttenuator = false
@@ -107,6 +100,42 @@ func New() *App {
 		OnSpace: func() { a.Plot.Paused = !a.Plot.Paused },
 	}
 	return a
+}
+
+// snapshot captures the current cockpit state and renders the PNG on a
+// background goroutine. F12 runs on the Gio event-loop goroutine, and a
+// full 1920x1080 render + PNG encode + file write takes long enough
+// (notably on Windows) to freeze the window if done inline. We capture
+// the inputs synchronously here — cloning the histogram so the writer
+// touches only immutable data — then hand off to a goroutine. Overlapping
+// presses are ignored while one render is in flight.
+func (a *App) snapshot() {
+	if !a.snapshotBusy.CompareAndSwap(false, true) {
+		return
+	}
+	cwd, _ := os.Getwd()
+	frames := a.FrameSource()
+	var hist *state.Histogram
+	if a.Hist != nil {
+		hist = a.Hist.Clone()
+	}
+	d := SnapshotData{
+		Reading: a.Read,
+		Frames:  frames,
+		Hist:    hist,
+		Stats:   state.ComputeStats(frames),
+		WindowS: a.Plot.WindowSec,
+		Page:    a.Controls.Selected,
+	}
+	go func() {
+		defer a.snapshotBusy.Store(false)
+		path, err := a.snapshotWriter(cwd, d)
+		if err != nil {
+			log.Printf("snapshot: %v", err)
+			return
+		}
+		log.Printf("snapshot saved: %s", path)
+	}()
 }
 
 // Run drives the Gio event loop. Returns when the window is closed.

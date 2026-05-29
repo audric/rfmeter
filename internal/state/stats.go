@@ -67,3 +67,10 @@ func (h *Histogram) Add(dbm float64) {
 
 // Reset clears all bins.
 func (h *Histogram) Reset() { *h = Histogram{} }
+
+// Clone returns an independent copy. Used to capture a stable histogram
+// for off-thread snapshot rendering while live updates keep arriving.
+func (h *Histogram) Clone() *Histogram {
+	cp := *h
+	return &cp
+}
