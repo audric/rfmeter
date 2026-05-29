@@ -41,8 +41,16 @@ Or use the bundled PowerShell helper (no `make` required):
 .\build.ps1 clean
 ```
 
-If scripts are blocked by execution policy, run it as
-`powershell -ExecutionPolicy Bypass -File .\build.ps1 <target>`.
+If scripts are blocked by execution policy, either run it as
+`powershell -ExecutionPolicy Bypass -File .\build.ps1 <target>`, or use
+the `make.bat` wrapper, which applies the bypass for you:
+
+```cmd
+make            :: build rfmeter.exe (default)
+make run        :: build and run
+make test       :: go test -race ./...
+make clean
+```
 
 ### Hide the console window (optional)
 
