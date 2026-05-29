@@ -96,5 +96,3 @@ docs/             spec, plan, device photo, vendor docs
 Vendor's original docs are in `docs/rfmeter_doc.txt` (plain text
 extract) and `rf_power_meter_100khz_to10Ghz/Dock/USB-RF-Power-Meter.docx`
 (extracted from the vendor zip).
-
-The full design rationale is in `docs/design.md`.
