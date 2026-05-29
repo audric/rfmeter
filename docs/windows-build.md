@@ -6,6 +6,8 @@ the Linux system libraries from the README (`libxkbcommon`, X11,
 Wayland, EGL) are needed: Gio links directly against the Windows
 graphics stack.
 
+![rfmeter running on Windows, connected to COM9](windows-interface.png)
+
 ## Prerequisites
 
 - **Go 1.22+** (1.25+ is pulled in transitively by `go.bug.st/serial`).
