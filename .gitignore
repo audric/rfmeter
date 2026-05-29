@@ -1,6 +1,7 @@
 /rfmeter
 *.test
 *.out
+*.exe
 coverage.*
 /log_*.csv
 /rfmeter_snapshot_*.png
