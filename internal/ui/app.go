@@ -5,6 +5,7 @@ import (
 	"log"
 	"math"
 	"os"
+	"path/filepath"
 	"sync/atomic"
 	"time"
 
@@ -43,6 +44,9 @@ type App struct {
 	// snapshotBusy is true while a snapshot is rendering off-thread, so
 	// repeated F12 presses are ignored rather than piling up goroutines.
 	snapshotBusy atomic.Bool
+	// toast holds a transient on-screen status message (e.g. snapshot
+	// progress). Read on the UI goroutine, written from the writer goroutine.
+	toast atomic.Pointer[toastMsg]
 }
 
 // New returns an App with default theme and synthetic demo data.
@@ -127,14 +131,17 @@ func (a *App) snapshot() {
 		WindowS: a.Plot.WindowSec,
 		Page:    a.Controls.Selected,
 	}
+	a.toast.Store(&toastMsg{text: "Saving snapshot…"})
 	go func() {
 		defer a.snapshotBusy.Store(false)
 		path, err := a.snapshotWriter(cwd, d)
 		if err != nil {
 			log.Printf("snapshot: %v", err)
+			a.toast.Store(&toastMsg{text: "Snapshot failed", until: time.Now().Add(4 * time.Second)})
 			return
 		}
 		log.Printf("snapshot saved: %s", path)
+		a.toast.Store(&toastMsg{text: "Saved " + filepath.Base(path), until: time.Now().Add(3 * time.Second)})
 	}()
 }
 
@@ -187,6 +194,7 @@ func (a *App) Run(w *app.Window) error {
 			if a.ShowAttenuator {
 				a.Attenuator.Layout(gtx, a.Controls.Selected)
 			}
+			a.drawToast(gtx, a.Theme)
 			e.Frame(gtx.Ops)
 		}
 	}
