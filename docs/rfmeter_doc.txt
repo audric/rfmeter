@@ -1,0 +1,46 @@
+Baud rate: The baud rate of the upper computer has been set to 921600 by
+default, and the baud rate of the serial port of the lower computer is
+921600. Sending data must end with an enter newline character (\r\n ||
+0A 0D).
+
+Part1：
+
+1.  Set the frequency and offset of 9 pages:
+
+    Set the first：“AXXXX±XX.X” If you set the frequency to 5658 and the
+    offset to +10, then send "A5658+10.0"; to set the remaining eight,
+    you only need to change the first letters to: BCDEFGHI, in proper
+    order and the rest are the same;
+
+2.  One-key setting (clearing):
+
+    Similar to individual
+    setting，“AXXXX±XX.XBXXXX±XX.XCXXXX±XX.X……”Connect the 9 interface
+    data in sequence without interval according to the individually set
+    format;
+
+3.  Change the sampling rate of the lower computer:
+
+There are three speeds. The default is medium speed, which can be
+changed by sending "S0", "S1", and "S2" respectively.
+
+Part2:
+
+1.  Data synchronization:
+
+The upper computer sends "Read" downwards. After receiving the data, the
+lower computer will follow the 9 pages of data as
+"RXXXX±XX.XXXXX±XX.XXXXX±XX.XXXXX±XX.XXXXX±XX.XXXXX±XX.XXXXX
+±XX.XXXXX±XX.XXXXX±XX.X" format is sent to the host computer, the format
+is similar to that in Part1, each page is set separately;
+
+2.  The wave data is sent up:
+
+After the lower-level opportunity processes and calculates the collected
+data, it sends up the penultimate digit in the format
+"a±XXXXXXXX(u||m||w)A" as the unit of power (W), and the corresponding
+relationship is: u-uW ,m-mW,wW, such as "a-39200011uA" means -39, 2dBm,
+0.11uW; "a+25838194mA" means 25.8dBm, 381.94mW.
+
+#In the high-speed operation mode, problems such as the failure of data
+transmission and reception of the lower computer are prone to occur

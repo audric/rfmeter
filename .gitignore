@@ -1,0 +1,6 @@
+/rfmeter
+/log_*.csv
+/rfmeter_snapshot_*.png
+/rf_power_meter_100khz_to10Ghz/
+/rf_power_meter_100khz_to10Ghz.zip
+/.claude/
