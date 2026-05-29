@@ -7,6 +7,9 @@ import (
 	"time"
 
 	"github.com/fogleman/gg"
+	"github.com/golang/freetype/truetype"
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/gofont/gobold"
 
 	"rfmeter/internal/meter"
 	"rfmeter/internal/state"
@@ -22,21 +25,29 @@ type SnapshotData struct {
 	Page    byte
 }
 
-// font candidates — first one that loads wins. DejaVu ships on Debian.
-var fontCandidates = []string{
-	"/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-	"/usr/share/fonts/TTF/DejaVuSans-Bold.ttf",
-	"/usr/share/fonts/dejavu/DejaVuSans-Bold.ttf",
+// snapshotFont is the Go Bold typeface, embedded in the binary. Using
+// the same family the live UI renders with (gofont) keeps the PNG
+// snapshot consistent with the on-screen cockpit, and embedding it
+// means rendering never depends on system font files — the old code
+// loaded DejaVu from hardcoded Linux paths and fell back to gg's tiny
+// fixed bitmap font wherever those were absent (e.g. Windows).
+var snapshotFont = mustParseFont(gobold.TTF)
+
+func mustParseFont(ttf []byte) *truetype.Font {
+	f, err := truetype.Parse(ttf)
+	if err != nil {
+		panic("snapshot: parse embedded font: " + err.Error())
+	}
+	return f
+}
+
+// snapshotFace returns a scalable font face at the given point size.
+func snapshotFace(size float64) font.Face {
+	return truetype.NewFace(snapshotFont, &truetype.Options{Size: size})
 }
 
 func loadFont(dc *gg.Context, size float64) {
-	for _, p := range fontCandidates {
-		if err := dc.LoadFontFace(p, size); err == nil {
-			return
-		}
-	}
-	// fallback: gg's default
-	_ = dc.LoadFontFace("", size)
+	dc.SetFontFace(snapshotFace(size))
 }
 
 // Snapshot renders an image and saves it to dir as
