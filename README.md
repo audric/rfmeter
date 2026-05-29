@@ -26,6 +26,9 @@ Requires:
   (plus the normal X11 / Wayland / EGL devel packages Gio needs)
 - User in the `dialout` group to read `/dev/ttyACM*`
 
+On Windows the system libs and `dialout` group don't apply — see
+[Building on Windows](docs/windows-build.md).
+
 ## Tests
 
 ```bash
@@ -72,6 +75,8 @@ coverage. The UI is verified manually against the live meter.
 
 - [Testing Meshtastic devices](docs/meshtastic-testing.md) — measuring
   LoRa node TX power safely: W↔dBm table and attenuator examples.
+- [Building on Windows](docs/windows-build.md) — cross-platform build,
+  COM-port notes, and cross-compiling.
 
 ## Keyboard
 

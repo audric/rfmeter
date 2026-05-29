@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"math"
+	"path/filepath"
 	"time"
 
 	"github.com/fogleman/gg"
@@ -78,7 +79,8 @@ func Snapshot(dir string, d SnapshotData) (string, error) {
 		d.Stats.N, d.Page, time.Now().Format(time.RFC3339)),
 		80, 1050)
 
-	path := fmt.Sprintf("%s/rfmeter_snapshot_%s.png", dir, time.Now().Format("20060102_150405"))
+	name := fmt.Sprintf("rfmeter_snapshot_%s.png", time.Now().Format("20060102_150405"))
+	path := filepath.Join(dir, name)
 	if err := dc.SavePNG(path); err != nil {
 		return "", err
 	}
