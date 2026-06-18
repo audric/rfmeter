@@ -144,8 +144,8 @@ Log a session to CSV with **F11** and grab a **PNG snapshot** with
 
 ## Sanity checklist
 
-- [ ] Attenuator (and dummy load / coupler) inline *before* powering
-      the radio's TX — never hot-plug the meter onto a live transmitter.
+- [ ] Attenuator inline *before* powering the radio's TX — never
+      hot-plug the meter onto a live transmitter.
 - [ ] Pad's power rating ≥ node output.
 - [ ] Band frequency matches the LoRa region.
 - [ ] Total attenuation entered as the band offset (F2).
