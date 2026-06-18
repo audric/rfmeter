@@ -7,15 +7,16 @@ A short field guide for measuring the transmit power of a Meshtastic
 > **Never connect a transmitting radio directly to the meter.** A
 > Meshtastic node can put out **+20 to +30 dBm (0.1 W to 1 W)**. The
 > meter's safe input ceiling is **0 dBm (1 mW)** — feeding it a watt
-> will destroy it instantly. **Always insert an attenuator** (and/or a
-> directional coupler / tap) between the radio and the meter.
+> will destroy it instantly. **Always insert an attenuator** between
+> the radio and the meter.
 
 ## Quick start
 
 1. Pick an attenuator so the meter sees roughly **−20 to −5 dBm**
    (see [Attenuator examples](#attenuator-examples)).
-2. Wire it inline: **node → attenuator → meter** (use a 50 Ω dummy
-   load / coupler if you don't want to radiate).
+2. Wire it inline: **node → attenuator → meter**. With the antenna
+   removed and everything in coax, the meter terminates the chain and
+   nothing radiates.
 3. In the app, **set a band to your LoRa frequency** (e.g. 868 or
    915 MHz) — edit any of F3–F10's freq field and Apply.
 4. Press **F2 (Attenuator helper)**, enter the attenuation in dB, and
